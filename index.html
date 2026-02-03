@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recargas Keyco</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            background-color: #1a1a1a; color: white; padding: 20px;
+        }
+
+        .card {
+            background: #2d2d2d; padding: 20px; border-radius: 15px;
+            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 520px;
+        }
+
+        #area-descarga {
+            width: 500px; height: 500px;
+            position: relative; overflow: hidden;
+            margin: 0 auto 20px auto; border: 2px solid #fcd535;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        #imagen-fondo {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; z-index: 1;
+        }
+
+        #contenido-dinamico {
+            position: relative; z-index: 2;
+            width: 95%;
+            background: rgba(0, 0, 0, 0.85); 
+            padding: 15px; border-radius: 10px;
+            box-sizing: border-box;
+            border: 1px solid rgba(252, 213, 53, 0.3);
+        }
+
+        h3 { color: #fcd535; margin: 0 0 10px 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th { color: #848e9c; font-size: 10px; padding-bottom: 5px; text-transform: uppercase; }
+        td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        
+        .pack { font-weight: bold; color: #fff; text-align: left; font-size: 15px; }
+        .detalle { color: #aaa; text-align: center; font-size: 13px; }
+        .total { color: #00ff88; font-weight: bold; text-align: right; font-size: 16px; }
+
+        .footer-texto {
+            margin-top: 15px;
+            color: #fcd535;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .controles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .input-group { display: flex; flex-direction: column; text-align: left; }
+        label { font-size: 11px; color: #aaa; margin-bottom: 4px; }
+        input { padding: 10px; border-radius: 5px; border: none; background: #444; color: #fcd535; font-weight: bold; }
+        
+        .btn-descarga {
+            grid-column: span 2; margin-top: 15px; padding: 15px;
+            background-color: #25d366; color: black; border: none;
+            border-radius: 8px; font-weight: bold; cursor: pointer;
+            text-transform: uppercase;
+        }
+        .btn-descarga:hover { background-color: #1ebe57; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2 style="color: #fcd535;">Recargas Keyco</h2>
+        
+        <div id="area-descarga">
+            <img id="imagen-fondo" src="fondo.png" alt="Fondo">
+            
+            <div id="contenido-dinamico">
+                <h3>💎 LISTA DE RECARGAS</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th align="left">Diamantes</th>
+                            <th>Desglose</th>
+                            <th align="right">Total BS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-precios"></tbody>
+                </table>
+                <div class="footer-texto">
+                    🚀 ¡Contáctame para tu recarga!
+                </div>
+            </div>
+        </div>
+
+        <div class="controles">
+            <div class="input-group">
+                <label>TASA DOLAR (P2P)</label>
+                <input type="number" id="tasa" value="60" oninput="calcular()">
+            </div>
+            <div class="input-group">
+                <label>COSTO PIN ($)</label>
+                <input type="number" id="costoReal" value="0.91" step="0.01" oninput="calcular()">
+            </div>
+            <div class="input-group" style="grid-column: span 2;">
+                <label>GANANCIA FIJA (BS)</label>
+                <input type="number" id="gananciaFija" value="50" oninput="calcular()">
+            </div>
+            <button class="btn-descarga" onclick="descargarImagen()">Generar Imagen PNG</button>
+        </div>
+    </div>
+
+    <script>
+        const packs = [
+            { cant: 110, mult: 1, descComi: 0 },
+            { cant: 341, mult: 3, descComi: 10 },
+            { cant: 572, mult: 5, descComi: 20 },
+            { cant: 1166, mult: 10, descComi: 40 },
+            { cant: 2398, mult: 21, descComi: 60 },
+            { cant: 6160, mult: 54, descComi: 80 }
+        ];
+
+        function calcular() {
+            const tasa = parseFloat(document.getElementById('tasa').value) || 0;
+            const costoPin = parseFloat(document.getElementById('costoReal').value) || 0;
+            const gananciaFija = parseFloat(document.getElementById('gananciaFija').value) || 0;
+            
+            const tabla = document.getElementById('tabla-precios');
+            tabla.innerHTML = "";
+
+            packs.forEach(p => {
+                let costoDolarBS = Math.ceil(costoPin * p.mult * tasa);
+                let comisionBS = Math.ceil((gananciaFija * p.mult) * (1 - (p.descComi / 100)));
+                let totalBS = costoDolarBS + comisionBS;
+
+                tabla.innerHTML += `
+                    <tr>
+                        <td class="pack">💎 ${p.cant}</td>
+                        <td class="detalle">${costoDolarBS} + ${comisionBS} BS</td>
+                        <td class="total">${totalBS} BS</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function descargarImagen() {
+            const area = document.getElementById('area-descarga');
+            html2canvas(area, {
+                useCORS: true,
+                scale: 2 
+            }).then(canvas => {
+                const enlace = document.createElement('a');
+                enlace.download = 'Precios_Keyco.png';
+                enlace.href = canvas.toDataURL("image/png");
+                enlace.click();
+            });
+        }
+
+        calcular();
+    </script>
+</body>
+</html>
