@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recargas Keyco</title>
+    <title>Generador Keyco - Efecto Sombra</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
             display: flex; flex-direction: column; align-items: center;
             background-color: #1a1a1a; color: white; padding: 20px;
         }
@@ -15,14 +15,15 @@
         .card {
             background: #2d2d2d; padding: 20px; border-radius: 15px;
             text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            width: 520px;
+            width: 550px;
         }
 
         #area-descarga {
-            width: 500px; height: 500px;
+            width: 500px; height: auto;
             position: relative; overflow: hidden;
             margin: 0 auto 20px auto; border: 2px solid #fcd535;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 30px 0; background: #000;
         }
 
         #imagen-fondo {
@@ -31,86 +32,108 @@
             object-fit: cover; z-index: 1;
         }
 
+        .marca-agua {
+            position: absolute; bottom: 10px; right: 15px;
+            font-size: 14px; font-weight: 900; color: rgba(255, 255, 255, 0.4);
+            z-index: 3; text-transform: uppercase; letter-spacing: 2px;
+        }
+
         #contenido-dinamico {
             position: relative; z-index: 2;
-            width: 95%;
-            background: rgba(0, 0, 0, 0.85); 
-            padding: 15px; border-radius: 10px;
-            box-sizing: border-box;
-            border: 1px solid rgba(252, 213, 53, 0.3);
+            width: 90%; display: flex; flex-direction: column; align-items: center;
         }
 
-        h3 { color: #fcd535; margin: 0 0 10px 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; }
+        .fecha-hoy {
+            background: #fcd535; color: #000; padding: 3px 12px;
+            border-radius: 20px; font-size: 12px; font-weight: bold;
+            margin-bottom: 10px; text-transform: uppercase;
+        }
 
-        table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        th { color: #848e9c; font-size: 10px; padding-bottom: 5px; text-transform: uppercase; }
-        td { padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .titulo-principal {
+            color: white; font-weight: 900; font-size: 28px;
+            text-transform: uppercase; margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.9); line-height: 1.1;
+        }
+
+        .grid-diamantes {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 20px; width: 100%; max-width: 420px;
+        }
+
+        /* SOMBRA DETRÁS DEL CUADRADO */
+        .caja-precio {
+            background: #e61919; border: 2.5px solid #000;
+            border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.6); /* Sombra sólida tipo cómic/gaming */
+        }
+
+        .caja-header { padding: 4px; font-size: 11px; color: #fff; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.2); }
         
-        .pack { font-weight: bold; color: #fff; text-align: left; font-size: 15px; }
-        .detalle { color: #aaa; text-align: center; font-size: 13px; }
-        .total { color: #00ff88; font-weight: bold; text-align: right; font-size: 16px; }
+        /* SOMBRA DETRÁS DE LOS NÚMEROS */
+        .caja-cantidad { 
+            font-size: 34px; font-weight: 900; color: white; 
+            padding: 5px 0; display: flex; justify-content: center; align-items: center; gap: 5px;
+            text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.8); /* Sombra marcada en los números */
+        }
+        
+        .caja-footer-precio { background: #000; color: #fff; padding: 8px; font-size: 18px; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.2); }
 
-        .footer-texto {
-            margin-top: 15px;
-            color: #fcd535;
-            font-weight: bold;
-            font-size: 14px;
+        .fila-tarjeta {
+            background: #e61919; border: 2.5px solid #000;
+            border-radius: 6px; display: flex; width: 320px;
+            overflow: hidden; font-weight: bold; position: relative; margin-top: 15px;
+            box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.6);
         }
 
-        .controles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .tarjeta-nombre { flex: 1; padding: 10px; color: white; text-align: left; text-transform: uppercase; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+        .tarjeta-precio { background: #000; padding: 10px 20px; color: #fff; min-width: 100px; font-size: 16px; }
+
+        .controles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; background: #333; padding: 20px; border-radius: 12px; }
         .input-group { display: flex; flex-direction: column; text-align: left; }
-        label { font-size: 11px; color: #aaa; margin-bottom: 4px; }
-        input { padding: 10px; border-radius: 5px; border: none; background: #444; color: #fcd535; font-weight: bold; }
+        label { font-size: 11px; color: #fcd535; margin-bottom: 5px; font-weight: bold; }
+        input[type="number"] { padding: 10px; border-radius: 6px; border: none; background: #1a1a1a; color: #fff; font-weight: bold; }
         
+        .switch-area { grid-column: span 2; display: flex; justify-content: space-around; background: #222; padding: 12px; border-radius: 8px; margin: 5px 0; }
+
         .btn-descarga {
-            grid-column: span 2; margin-top: 15px; padding: 15px;
-            background-color: #25d366; color: black; border: none;
-            border-radius: 8px; font-weight: bold; cursor: pointer;
-            text-transform: uppercase;
+            grid-column: span 2; margin-top: 10px; padding: 16px;
+            background-color: #25d366; color: #000; border: none;
+            border-radius: 8px; font-weight: 900; cursor: pointer; text-transform: uppercase;
         }
-        .btn-descarga:hover { background-color: #1ebe57; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h2 style="color: #fcd535;">Recargas Keyco</h2>
+        <h2 style="color: #fcd535;">Keyco Admin - Con Sombras</h2>
         
         <div id="area-descarga">
             <img id="imagen-fondo" src="fondo.png" alt="Fondo">
+            <div class="marca-agua">© KEYCO RECARGAS</div>
             
             <div id="contenido-dinamico">
-                <h3>💎 LISTA DE RECARGAS</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th align="left">Diamantes</th>
-                            <th>Desglose</th>
-                            <th align="right">Total BS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-precios"></tbody>
-                </table>
-                <div class="footer-texto">
-                    🚀 ¡Contáctame para tu recarga!
-                </div>
+                <div class="fecha-hoy" id="fecha-actual">Cargando...</div>
+                <div class="titulo-principal">Recarga tus<br><span style="font-size: 40px; color: #fcd535;">Diamantes</span></div>
+                
+                <div class="grid-diamantes" id="contenedor-diamantes"></div>
+
+                <div class="titulo-principal" style="font-size: 18px; margin: 30px 0 10px 0;">Adquiere tus Tarjetas</div>
+                <div id="contenedor-tarjetas"></div>
             </div>
         </div>
 
         <div class="controles">
-            <div class="input-group">
-                <label>TASA DOLAR (P2P)</label>
-                <input type="number" id="tasa" value="60" oninput="calcular()">
+            <div class="input-group"><label>Tasa Dólar (BS)</label><input type="number" id="tasa" value="60" oninput="calcular()"></div>
+            <div class="input-group"><label>Costo PIN 110 ($)</label><input type="number" id="costoReal" value="0.91" step="0.01" oninput="calcular()"></div>
+            <div class="input-group"><label>Ganancia Base (BS)</label><input type="number" id="gananciaFija" value="50" oninput="calcular()"></div>
+            <div class="input-group"><label>Costo Tarjeta Sem ($)</label><input type="number" id="costoSem" value="2.00" step="0.05" oninput="calcular()"></div>
+            
+            <div class="switch-area">
+                <label><input type="checkbox" id="stockSem" checked onchange="calcular()"> Semanal OK</label>
+                <label><input type="checkbox" id="stockMen" checked onchange="calcular()"> Mensual OK</label>
             </div>
-            <div class="input-group">
-                <label>COSTO PIN ($)</label>
-                <input type="number" id="costoReal" value="0.91" step="0.01" oninput="calcular()">
-            </div>
-            <div class="input-group" style="grid-column: span 2;">
-                <label>GANANCIA FIJA (BS)</label>
-                <input type="number" id="gananciaFija" value="50" oninput="calcular()">
-            </div>
-            <button class="btn-descarga" onclick="descargarImagen()">Generar Imagen PNG</button>
+
+            <button class="btn-descarga" onclick="descargarImagen()">Generar Catálogo con Sombras</button>
         </div>
     </div>
 
@@ -124,44 +147,59 @@
             { cant: 6160, mult: 54, descComi: 80 }
         ];
 
+        function actualizarFecha() {
+            const opciones = { day: '2-digit', month: 'long', year: 'numeric' };
+            const hoy = new Date().toLocaleDateString('es-ES', opciones);
+            document.getElementById('fecha-actual').innerText = `Actualizado: ${hoy}`;
+        }
+
         function calcular() {
             const tasa = parseFloat(document.getElementById('tasa').value) || 0;
             const costoPin = parseFloat(document.getElementById('costoReal').value) || 0;
             const gananciaFija = parseFloat(document.getElementById('gananciaFija').value) || 0;
+            const costoSem = parseFloat(document.getElementById('costoSem').value) || 0;
             
-            const tabla = document.getElementById('tabla-precios');
-            tabla.innerHTML = "";
-
+            const containerD = document.getElementById('contenedor-diamantes');
+            containerD.innerHTML = "";
             packs.forEach(p => {
-                let costoDolarBS = Math.ceil(costoPin * p.mult * tasa);
-                let comisionBS = Math.ceil((gananciaFija * p.mult) * (1 - (p.descComi / 100)));
-                let totalBS = costoDolarBS + comisionBS;
-
-                tabla.innerHTML += `
-                    <tr>
-                        <td class="pack">💎 ${p.cant}</td>
-                        <td class="detalle">${costoDolarBS} + ${comisionBS} BS</td>
-                        <td class="total">${totalBS} BS</td>
-                    </tr>
+                let total = (Math.ceil(costoPin * p.mult * tasa) + Math.ceil(gananciaFija * p.mult * (1 - p.descComi/100))).toLocaleString('es-ES');
+                containerD.innerHTML += `
+                    <div class="caja-precio">
+                        <div class="caja-header">Diamantes</div>
+                        <div class="caja-cantidad">${p.cant} 💎</div>
+                        <div class="caja-footer-precio">${total} BS</div>
+                    </div>
                 `;
             });
+
+            const containerT = document.getElementById('contenedor-tarjetas');
+            let pSem = (Math.ceil(costoSem * tasa) + gananciaFija).toLocaleString('es-ES');
+            let pMen = (Math.ceil((costoSem * 4.4) * tasa) + (gananciaFija * 2)).toLocaleString('es-ES');
+
+            containerT.innerHTML = `
+                <div class="fila-tarjeta">
+                    <div class="tarjeta-nombre">💳 T. Semanal</div>
+                    <div class="tarjeta-precio">${pSem} BS</div>
+                </div>
+                <div class="fila-tarjeta">
+                    <div class="tarjeta-nombre">💳 T. Mensual</div>
+                    <div class="tarjeta-precio">${pMen} BS</div>
+                </div>
+            `;
         }
 
         function descargarImagen() {
             const area = document.getElementById('area-descarga');
-            html2canvas(area, {
-                useCORS: true,
-                scale: 2 
-            }).then(canvas => {
-                const enlace = document.createElement('a');
-                enlace.download = 'Precios_Keyco.png';
-                enlace.href = canvas.toDataURL("image/png");
-                enlace.click();
+            html2canvas(area, { useCORS: true, scale: 3 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Keyco_Sombras_${new Date().toLocaleDateString()}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
             });
         }
 
+        actualizarFecha();
         calcular();
     </script>
 </body>
-
-</html> 
+</html>
