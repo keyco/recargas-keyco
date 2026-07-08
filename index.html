@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador Keyco - Efecto Sombra</title>
+    <title>Generador Keyco + Multi-Calculadora</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
@@ -57,43 +57,110 @@
 
         .grid-diamantes {
             display: grid; grid-template-columns: repeat(2, 1fr);
-            gap: 20px; width: 100%; max-width: 420px;
+            gap: 25px 20px; width: 100%; max-width: 420px;
+            margin-bottom: 15px;
         }
 
-        /* SOMBRA DETRÁS DEL CUADRADO */
+        .sombra-contenedor {
+            position: relative;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            margin-bottom: 5px;
+        }
+
         .caja-precio {
             background: #e61919; border: 2.5px solid #000;
             border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;
-            box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.6); /* Sombra sólida tipo cómic/gaming */
+            transform: translate(-6px, -6px);
         }
 
         .caja-header { padding: 4px; font-size: 11px; color: #fff; text-transform: uppercase; font-weight: bold; background: rgba(0,0,0,0.2); }
-        
-        /* SOMBRA DETRÁS DE LOS NÚMEROS */
-        .caja-cantidad { 
-            font-size: 34px; font-weight: 900; color: white; 
-            padding: 5px 0; display: flex; justify-content: center; align-items: center; gap: 5px;
-            text-shadow: 4px 4px 0px rgba(0, 0, 0, 0.8); /* Sombra marcada en los números */
-        }
-        
+        .caja-cantidad { font-size: 34px; font-weight: 900; color: white; padding: 5px 0; display: flex; justify-content: center; align-items: center; gap: 5px; text-shadow: 3px 3px 0px #000; }
         .caja-footer-precio { background: #000; color: #fff; padding: 8px; font-size: 18px; font-weight: bold; border-top: 1px solid rgba(255,255,255,0.2); }
 
-        .fila-tarjeta {
-            background: #e61919; border: 2.5px solid #000;
-            border-radius: 6px; display: flex; width: 320px;
-            overflow: hidden; font-weight: bold; position: relative; margin-top: 15px;
-            box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.6);
-        }
-
+        .sombra-tarjeta { position: relative; background: rgba(0, 0, 0, 0.6); border-radius: 6px; margin-top: 15px; width: 320px; }
+        .fila-tarjeta { background: #e61919; border: 2.5px solid #000; border-radius: 6px; display: flex; width: 100%; overflow: hidden; font-weight: bold; transform: translate(-4px, -4px); }
         .tarjeta-nombre { flex: 1; padding: 10px; color: white; text-align: left; text-transform: uppercase; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-        .tarjeta-precio { background: #000; padding: 10px 20px; color: #fff; min-width: 100px; font-size: 16px; }
+        .tarjeta-precio { background: #000; padding: 10px 20px; color: #fff; min-width: 100px; font-size: 16px; display: flex; align-items: center; justify-content: center; }
 
+        /* Controles */
         .controles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; background: #333; padding: 20px; border-radius: 12px; }
         .input-group { display: flex; flex-direction: column; text-align: left; }
         label { font-size: 11px; color: #fcd535; margin-bottom: 5px; font-weight: bold; }
         input[type="number"] { padding: 10px; border-radius: 6px; border: none; background: #1a1a1a; color: #fff; font-weight: bold; }
         
         .switch-area { grid-column: span 2; display: flex; justify-content: space-around; background: #222; padding: 12px; border-radius: 8px; margin: 5px 0; }
+        .switch-area label { color: white; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+        /* SECCIÓN CALCULADORA CON CANTIDADES (MULTIPLE) */
+        .seccion-calculadora {
+            grid-column: span 2;
+            background: #222;
+            border: 2px dashed #fcd535;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            text-align: left;
+        }
+        .titulo-calc { color: #fcd535; font-weight: bold; font-size: 14px; margin-bottom: 12px; text-transform: uppercase; text-align: center;}
+        
+        .lista-seleccionables {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+        .item-calc {
+            background: #444;
+            padding: 6px 12px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+        .controles-cant {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-cant {
+            background: #1a1a1a;
+            color: #fcd535;
+            border: 1px solid #555;
+            border-radius: 4px;
+            width: 26px;
+            height: 26px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-cant:hover { background: #000; }
+        .num-cant {
+            font-weight: bold;
+            min-width: 15px;
+            text-align: center;
+        }
+        .num-cant.con-items { color: #25d366; }
+        
+        .pantalla-total {
+            background: #000;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #444;
+            position: relative;
+        }
+        .total-bs { color: #25d366; font-size: 24px; font-weight: 900; }
+        .total-usd { color: #aaa; font-size: 14px; }
+        .btn-reset {
+            position: absolute; right: 10px; top: 10px;
+            background: #e61919; color: white; border: none;
+            border-radius: 4px; padding: 4px 8px; font-size: 10px;
+            cursor: pointer; font-weight: bold; text-transform: uppercase;
+        }
 
         .btn-descarga {
             grid-column: span 2; margin-top: 10px; padding: 16px;
@@ -105,7 +172,7 @@
 <body>
 
     <div class="card">
-        <h2 style="color: #fcd535;">Keyco Admin - Con Sombras</h2>
+        <h2 style="color: #fcd535;">Keyco Admin + Calculadora Avanzada</h2>
         
         <div id="area-descarga">
             <img id="imagen-fondo" src="fondo.png" alt="Fondo">
@@ -117,23 +184,36 @@
                 
                 <div class="grid-diamantes" id="contenedor-diamantes"></div>
 
-                <div class="titulo-principal" style="font-size: 18px; margin: 30px 0 10px 0;">Adquiere tus Tarjetas</div>
+                <div id="seccion-tarjetas-titulo" class="titulo-principal" style="font-size: 18px; margin: 20px 0 10px 0; display: none;">Adquiere tus Tarjetas</div>
                 <div id="contenedor-tarjetas"></div>
             </div>
         </div>
 
         <div class="controles">
             <div class="input-group"><label>Tasa Dólar (BS)</label><input type="number" id="tasa" value="60" oninput="calcular()"></div>
-            <div class="input-group"><label>Costo PIN 110 ($)</label><input type="number" id="costoReal" value="0.91" step="0.01" oninput="calcular()"></div>
             <div class="input-group"><label>Ganancia Base (BS)</label><input type="number" id="gananciaFija" value="50" oninput="calcular()"></div>
+            <div class="input-group"><label>Costo PIN 110 ($)</label><input type="number" id="costoReal" value="0.91" step="0.01" oninput="calcular()"></div>
             <div class="input-group"><label>Costo Tarjeta Sem ($)</label><input type="number" id="costoSem" value="2.00" step="0.05" oninput="calcular()"></div>
+            <div class="input-group" style="grid-column: span 2;"><label>Costo Tarjeta Men ($)</label><input type="number" id="costoMenInput" value="8.80" step="0.10" oninput="calcular()"></div>
             
             <div class="switch-area">
                 <label><input type="checkbox" id="stockSem" checked onchange="calcular()"> Semanal OK</label>
                 <label><input type="checkbox" id="stockMen" checked onchange="calcular()"> Mensual OK</label>
             </div>
 
-            <button class="btn-descarga" onclick="descargarImagen()">Generar Catálogo con Sombras</button>
+            <div class="seccion-calculadora">
+                <div class="titulo-calc">🧮 Calculadora de Venta Múltiple</div>
+                <div class="lista-seleccionables" id="calc-opciones">
+                    </div>
+                <div class="pantalla-total">
+                    <button class="btn-reset" onclick="limpiarCalculadora()">Borrar todo</button>
+                    <div style="font-size: 11px; color: #888; text-transform: uppercase;">Total Pedido Actual</div>
+                    <div class="total-bs" id="calc-total-bs">0 BS</div>
+                    <div class="total-usd" id="calc-total-usd">= 0.00 $</div>
+                </div>
+            </div>
+
+            <button class="btn-descarga" onclick="descargarImagen()">Generar Catálogo</button>
         </div>
     </div>
 
@@ -147,6 +227,9 @@
             { cant: 6160, mult: 54, descComi: 80 }
         ];
 
+        // Memoria para guardar las cantidades seleccionadas en la calculadora
+        let carrito = {};
+
         function actualizarFecha() {
             const opciones = { day: '2-digit', month: 'long', year: 'numeric' };
             const hoy = new Date().toLocaleDateString('es-ES', opciones);
@@ -158,41 +241,174 @@
             const costoPin = parseFloat(document.getElementById('costoReal').value) || 0;
             const gananciaFija = parseFloat(document.getElementById('gananciaFija').value) || 0;
             const costoSem = parseFloat(document.getElementById('costoSem').value) || 0;
+            const costoMen = parseFloat(document.getElementById('costoMenInput').value) || 0; // Captura nueva del input
             
+            // 1. Render de Diamantes
             const containerD = document.getElementById('contenedor-diamantes');
             containerD.innerHTML = "";
-            packs.forEach(p => {
-                let total = (Math.ceil(costoPin * p.mult * tasa) + Math.ceil(gananciaFija * p.mult * (1 - p.descComi/100))).toLocaleString('es-ES');
+            
+            packs.forEach((p, index) => {
+                let precioBs = Math.ceil(costoPin * p.mult * tasa) + Math.ceil(gananciaFija * p.mult * (1 - p.descComi/100));
+                
                 containerD.innerHTML += `
-                    <div class="caja-precio">
-                        <div class="caja-header">Diamantes</div>
-                        <div class="caja-cantidad">${p.cant} 💎</div>
-                        <div class="caja-footer-precio">${total} BS</div>
+                    <div class="sombra-contenedor">
+                        <div class="caja-precio">
+                            <div class="caja-header">Diamantes</div>
+                            <div class="caja-cantidad">${p.cant} 💎</div>
+                            <div class="caja-footer-precio">${precioBs.toLocaleString('es-ES')} BS</div>
+                        </div>
                     </div>
                 `;
             });
 
+            // 2. Render de Tarjetas con los inputs asignados
             const containerT = document.getElementById('contenedor-tarjetas');
-            let pSem = (Math.ceil(costoSem * tasa) + gananciaFija).toLocaleString('es-ES');
-            let pMen = (Math.ceil((costoSem * 4.4) * tasa) + (gananciaFija * 2)).toLocaleString('es-ES');
+            const tituloTarjetas = document.getElementById('seccion-tarjetas-titulo');
+            const mostrarSem = document.getElementById('stockSem').checked;
+            const mostrarMen = document.getElementById('stockMen').checked;
+            
+            let pSem = Math.ceil(costoSem * tasa) + gananciaFija;
+            let pMen = Math.ceil(costoMen * tasa) + (gananciaFija * 2); // Fórmula dinámica para mensual
 
-            containerT.innerHTML = `
-                <div class="fila-tarjeta">
-                    <div class="tarjeta-nombre">💳 T. Semanal</div>
-                    <div class="tarjeta-precio">${pSem} BS</div>
-                </div>
-                <div class="fila-tarjeta">
-                    <div class="tarjeta-nombre">💳 T. Mensual</div>
-                    <div class="tarjeta-precio">${pMen} BS</div>
+            let htmlTarjetas = "";
+
+            if (mostrarSem) {
+                htmlTarjetas += `
+                    <div class="sombra-tarjeta">
+                        <div class="fila-tarjeta">
+                            <div class="tarjeta-nombre">💳 T. Semanal</div>
+                            <div class="tarjeta-precio">${pSem.toLocaleString('es-ES')} BS</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (mostrarMen) {
+                htmlTarjetas += `
+                    <div class="sombra-tarjeta">
+                        <div class="fila-tarjeta">
+                            <div class="tarjeta-nombre">💳 T. Mensual</div>
+                            <div class="tarjeta-precio">${pMen.toLocaleString('es-ES')} BS</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            containerT.innerHTML = htmlTarjetas;
+            tituloTarjetas.style.display = (mostrarSem || mostrarMen) ? "block" : "none";
+
+            // 3. Re-generar UI de la calculadora interna basándose en precios actuales
+            construirCalculadora(pSem, pMen);
+        }
+
+        function construirCalculadora(precioSem, precioMen) {
+            const containerCalc = document.getElementById('calc-opciones');
+            const tasa = parseFloat(document.getElementById('tasa').value) || 0;
+            const costoPin = parseFloat(document.getElementById('costoReal').value) || 0;
+            const gananciaFija = parseFloat(document.getElementById('gananciaFija').value) || 0;
+
+            let html = "";
+
+            // Agregar filas de Diamantes
+            packs.forEach((p, i) => {
+                let precioBs = Math.ceil(costoPin * p.mult * tasa) + Math.ceil(gananciaFija * p.mult * (1 - p.descComi/100));
+                const key = `d-${p.cant}`;
+                if (!carrito[key]) carrito[key] = 0;
+
+                html += crearFilaCalc(key, `${p.cant} 💎`, precioBs);
+            });
+
+            // Agregar Fila Semanal (si está activa)
+            if (document.getElementById('stockSem').checked) {
+                const key = 't-semanal';
+                if (!carrito[key]) carrito[key] = 0;
+                html += crearFilaCalc(key, '💳 Tarjeta Semanal', precioSem);
+            }
+
+            // Agregar Fila Mensual (si está activa)
+            if (document.getElementById('stockMen').checked) {
+                const key = 't-mensual';
+                if (!carrito[key]) carrito[key] = 0;
+                html += crearFilaCalc(key, '💳 Tarjeta Mensual', precioMen);
+            }
+
+            containerCalc.innerHTML = html;
+            sumarTotales();
+        }
+
+        function crearFilaCalc(key, nombre, precio) {
+            const cant = carrito[key] || 0;
+            const claseCant = cant > 0 ? "con-items" : "";
+            return `
+                <div class="item-calc">
+                    <span>${nombre} <strong>(${precio} BS)</strong></span>
+                    <div class="controles-cant">
+                        <button class="btn-cant" onclick="cambiarCantidad('${key}', -1, ${precio})">-</button>
+                        <span class="num-cant ${claseCant}" id="cant-${key}">${cant}</span>
+                        <button class="btn-cant" onclick="cambiarCantidad('${key}', 1, ${precio})">+</button>
+                    </div>
                 </div>
             `;
         }
 
+        function cambiarCantidad(key, cambio, precio) {
+            if (!carrito[key]) carrito[key] = 0;
+            carrito[key] += cambio;
+            if (carrito[key] < 0) carrito[key] = 0; // Evita números negativos
+
+            // Actualizar número en pantalla rápido sin redibujar todo
+            const elemento = document.getElementById(`cant-${key}`);
+            if (elemento) {
+                elemento.innerText = carrito[key];
+                if (carrito[key] > 0) elemento.classList.add("con-items");
+                else elemento.classList.remove("con-items");
+            }
+
+            sumarTotales();
+        }
+
+        function sumarTotales() {
+            const tasa = parseFloat(document.getElementById('tasa').value) || 1;
+            const costoPin = parseFloat(document.getElementById('costoReal').value) || 0;
+            const gananciaFija = parseFloat(document.getElementById('gananciaFija').value) || 0;
+            const costoSem = parseFloat(document.getElementById('costoSem').value) || 0;
+            const costoMen = parseFloat(document.getElementById('costoMenInput').value) || 0;
+
+            let totalBs = 0;
+
+            // Calcular acumulados de Diamantes
+            packs.forEach((p) => {
+                let precioBs = Math.ceil(costoPin * p.mult * tasa) + Math.ceil(gananciaFija * p.mult * (1 - p.descComi/100));
+                totalBs += (carrito[`d-${p.cant}`] || 0) * precioBs;
+            });
+
+            // Calcular acumulados de tarjetas
+            let pSem = Math.ceil(costoSem * tasa) + gananciaFija;
+            let pMen = Math.ceil(costoMen * tasa) + (gananciaFija * 2);
+
+            totalBs += (carrito['t-semanal'] || 0) * pSem;
+            totalBs += (carrito['t-mensual'] || 0) * pMen;
+
+            let totalUsd = totalBs / tasa;
+
+            document.getElementById('calc-total-bs').innerText = `${totalBs.toLocaleString('es-ES')} BS`;
+            document.getElementById('calc-total-usd').innerText = `= ${totalUsd.toFixed(2)} $`;
+        }
+
+        function limpiarCalculadora() {
+            Object.keys(carrito).forEach(key => carrito[key] = 0);
+            calcular();
+        }
+
         function descargarImagen() {
             const area = document.getElementById('area-descarga');
-            html2canvas(area, { useCORS: true, scale: 3 }).then(canvas => {
+            html2canvas(area, { 
+                useCORS: true, 
+                scale: 3,
+                backgroundColor: "#000000"
+            }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `Keyco_Sombras_${new Date().toLocaleDateString()}.png`;
+                link.download = `Keyco_Catálogo_${new Date().toISOString().slice(0,10)}.png`;
                 link.href = canvas.toDataURL("image/png");
                 link.click();
             });
